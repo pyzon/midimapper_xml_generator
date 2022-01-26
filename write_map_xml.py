@@ -1,6 +1,6 @@
 import os
 from read_csv import read_scale_csv
-from constants import CHANNEL_COUNT
+from constants import INPUT_CHANNEL_COUNT, INPUT_PARAM_COUNT, INPUT_CHANNEL_RANGE
 
 
 def write_map_xml(input_params):
@@ -8,9 +8,9 @@ def write_map_xml(input_params):
 
 	scales_str = generate_scales_xml_part()
 
-	map_xml_str = f'''<?xml version="1.0" encoding="UTF-8"?>
-<midimapconfig version="1.0">{input_channels_str}{scales_str}
-</midimapconfig>'''
+	map_xml_str = f'<?xml version="1.0" encoding="UTF-8"?>'
+	map_xml_str += f'\n<midimapconfig version="1.0">{input_channels_str}{scales_str}'
+	map_xml_str += f'\n</midimapconfig>\n'
 
 	map_xml = open("D:\\IT Projects\\Idea\\midimapper\\resources\\map.xml", "w")
 	map_xml.write(map_xml_str)
@@ -19,13 +19,13 @@ def write_map_xml(input_params):
 
 def generate_input_channels_xml_part(params):
 	channels_str = ''
-	for i in range(CHANNEL_COUNT):
-		channel_number_str = '{:02x}'.format(i)
+	for channel_id in INPUT_CHANNEL_RANGE:
+		channel_number_str = '{:02x}'.format(channel_id)
 		input_params_str = generate_input_params_xml_part(params)
-		channel_str = f'''
-	<channel id="CH1" name="Kick out">
-		<address sysex0="03" sysex1="{channel_number_str}" nrpn="00"/>{input_params_str}
-	</channel>'''
+		channel_str = f'\n\t<channel id="IN1" name="Kick out">'
+		channel_str += f'\n\t\t<address sysex0="03" sysex1="{channel_number_str}" nrpn="{channel_id}"/>'
+		channel_str += input_params_str
+		channel_str += f'\n\t</channel>'
 		channels_str += channel_str
 	return channels_str
 
@@ -34,7 +34,7 @@ def generate_input_params_xml_part(params):
 	params_str = ''
 	for param in params:
 		if param.scale == '':
-			continue
+			continue  # this is for development only
 		data_str = f' bytes="{param.bytes}" scale="{param.scale}"'
 		if param.signed != '':
 			data_str += f' signed="{param.signed}"'
