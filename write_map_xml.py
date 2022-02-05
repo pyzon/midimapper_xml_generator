@@ -1,6 +1,8 @@
 import os
+
+from channel_names import input_channel_names
+from constants import INPUT_CHANNEL_RANGE
 from read_csv import read_scale_csv
-from constants import INPUT_CHANNEL_COUNT, INPUT_PARAM_COUNT, INPUT_CHANNEL_RANGE
 
 
 def write_map_xml(input_params):
@@ -22,7 +24,7 @@ def generate_input_channels_xml_part(params):
 	for channel_id in INPUT_CHANNEL_RANGE:
 		channel_number_str = '{:02x}'.format(channel_id)
 		input_params_str = generate_input_params_xml_part(params)
-		channel_str = f'\n\t<channel id="IN1" name="Kick out">'
+		channel_str = f'\n\t<channel id="IN{channel_id + 1}" name="{input_channel_names[channel_id]}">'
 		channel_str += f'\n\t\t<address sysex0="03" sysex1="{channel_number_str}" nrpn="{channel_id}"/>'
 		channel_str += input_params_str
 		channel_str += f'\n\t</channel>'
