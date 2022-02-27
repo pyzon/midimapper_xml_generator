@@ -1,0 +1,4 @@
+paramName,sysex0,sysex1,nrpn,bytes,scale,signed,min,max,dmin,dmax,exp,thresh,base,coeff,control
+mute,00,0c,0,1,SW,,,,,,,,,,mute
+solo,00,0d,1,1,SW,,,,,,,,,,solo
+fader,00,0e,2,2,SPLINE,true,-906,100,-1200,60.2,,,,,volume

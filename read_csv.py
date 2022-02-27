@@ -3,10 +3,10 @@ from Param import Param
 from Point import Point
 
 
-def read_input_csv():
+def read_channel_csv(file):
 	params = []
-	with open('input.csv') as input_csv:
-		reader = csv.reader(input_csv)
+	with open(file) as channel_csv:
+		reader = csv.reader(channel_csv)
 		for row in reader:
 			params.append(Param(
 				row[0],

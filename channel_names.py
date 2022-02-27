@@ -48,3 +48,14 @@ input_channel_names = [
 	'Input 47',
 	'Input 48',
 ]
+
+aux_channel_names = [
+	'Reverb 1',
+	'Reverb 2',
+	'Delay',
+	'Tap Delay',
+	'Aux 5',
+	'Aux 6',
+	'Aux 7',
+	'Aux 8',
+]
