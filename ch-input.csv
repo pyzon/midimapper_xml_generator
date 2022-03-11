@@ -4,7 +4,7 @@ mute,0,0c,1,1,SW,,,,,,,,,,mute
 solo,0,0d,2,1,SW,,,,,,,,,,solo
 fader,0,0e,3,2,SPLINE,true,-906,100,-1200,60.2,,,,,volume
 pan,0,10,4,1,LIN,false,1,127,1,127,,,,,panner:panX
-filter sw,0,20,5,1,LIN,false,0,1,0,1.5,,,,,inserts/slot1:on
+filter sw,0,20,5,1,SW,,,,,,,,,,inserts/slot1:on
 filter att,0,22,6,2,EXPLIN,true,-480,150,-1000,360,,-216,1.005772709,0.6934,inserts/slot1:param4
 filter freq,0,24,7,3,LOG,false,20,20000,10,30000,,,,,inserts/slot1:param149
 filter q,0,27,8,2,LOG,false,36,1600,2.5,4000,,,,,inserts/slot1:param151

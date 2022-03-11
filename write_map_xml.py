@@ -3,26 +3,31 @@ import os
 from typing import List
 
 from Param import Param
-from channel_names import input_channel_names, aux_channel_names
-from constants import INPUT_CHANNEL_RANGE, AUX_CHANNEL_RANGE
+from channel_names import input_channel_names, aux_channel_names, dca_channel_names, main_channel_names
+from constants import INPUT_CHANNEL_RANGE, AUX_CHANNEL_RANGE, DCA_CHANNEL_RANGE, MAIN_CHANNEL_RANGE
 from read_csv import read_scale_csv
 
 
 class ChannelType:
-	def __init__(self, ch_range, name, sysex, name_list):
+	def __init__(self, ch_range, name, sysex, ch_num_offset, name_list):
 		self.channel_range = ch_range
 		self.name = name
 		self.sysex = sysex
+		self.ch_num_offset = ch_num_offset
 		self.name_list = name_list
 
 
-input_channel_type = ChannelType(INPUT_CHANNEL_RANGE, "IN", "03", input_channel_names)
-aux_channel_type = ChannelType(AUX_CHANNEL_RANGE, "AUX", "05", aux_channel_names)
+input_channel_type = ChannelType(INPUT_CHANNEL_RANGE, "IN", "03", 0, input_channel_names)
+aux_channel_type = ChannelType(AUX_CHANNEL_RANGE, "AUX", "05", 0, aux_channel_names)
+dca_channel_type = ChannelType(DCA_CHANNEL_RANGE, "DCA", "09", 0, dca_channel_names[:7])
+main_channel_type = ChannelType(MAIN_CHANNEL_RANGE, "MAIN", "09", 7, main_channel_names)
 
 
-def write_map_xml(input_params, aux_params):
-	input_channels_str = generate_general_channels_xml_part(input_params, input_channel_type)
-	aux_channel_str = generate_general_channels_xml_part(aux_params, aux_channel_type)
+def write_map_xml(input_params, aux_params, dca_params):
+	input_channels_str = generate_general_channels_xml(input_params, input_channel_type)
+	aux_channel_str = generate_general_channels_xml(aux_params, aux_channel_type)
+	dca_channel_str = generate_general_channels_xml(dca_params, dca_channel_type)
+	main_channel_str = generate_general_channels_xml(dca_params, main_channel_type)
 
 	scales_str = generate_scales_xml_part()
 
@@ -30,6 +35,8 @@ def write_map_xml(input_params, aux_params):
 	map_xml_str += f'\n<midimapconfig version="1.0">'
 	map_xml_str += input_channels_str
 	map_xml_str += aux_channel_str
+	map_xml_str += dca_channel_str
+	map_xml_str += main_channel_str
 	map_xml_str += scales_str
 	map_xml_str += f'\n</midimapconfig>\n'
 
@@ -38,12 +45,13 @@ def write_map_xml(input_params, aux_params):
 	map_xml.close()
 
 
-def generate_general_channels_xml_part(params: List[Param], channel_type: ChannelType):
+def generate_general_channels_xml(params: List[Param], channel_type: ChannelType):
+	"""Generates a list of channels of the specified channel type as a string that will go into the map.xml file."""
 	channels_str = ''
 	for channel_id in channel_type.channel_range:
 		local_channel_id = channel_id - channel_type.channel_range.start
 
-		channel_number_str = '{:02x}'.format(local_channel_id)
+		channel_number_str = '{:02x}'.format(local_channel_id + channel_type.ch_num_offset)
 		params_str = generate_params_xml_part(params)
 		name = channel_type.name_list[local_channel_id]
 		channel_str = f'\n\t<channel id="{channel_type.name}{local_channel_id + 1}" name="{name}">'
@@ -57,8 +65,8 @@ def generate_general_channels_xml_part(params: List[Param], channel_type: Channe
 def generate_params_xml_part(params):
 	params_str = ''
 	for param in params:
-		if param.scale == '':
-			continue  # this is for development only
+		if param.scale == '':  # this is for development/debugging purposes
+			continue
 		data_str = f' bytes="{param.bytes}" scale="{param.scale}"'
 		if param.signed != '':
 			data_str += f' signed="{param.signed}"'
